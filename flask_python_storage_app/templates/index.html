@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload to Azure Blob Storage</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container for the form */
+        .upload-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        /* Heading styles */
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Input file styles */
+        input[type="file"] {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Submit button styles */
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Success message styles */
+        .success-message {
+            color: green;
+            font-size: 18px;
+            margin-top: 20px;
+            display: none;  /* Initially hidden */
+        }
+
+        /* Footer styles */
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+
+    <script>
+        // This function will handle the form submission and display a success message
+        function handleFormSubmit(event) {
+            event.preventDefault();  // Prevent the default form submission behavior
+
+            // Create a FormData object to handle file upload
+            let formData = new FormData(event.target);
+
+            // Send the form data using fetch
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())  // Handle response as text (you can handle JSON if needed)
+            .then(data => {
+                console.log('File uploaded successfully:', data);
+
+                // Display the success message
+                let successMessage = document.getElementById('success-message');
+                successMessage.style.display = 'block';  // Show the message
+                successMessage.innerText = 'File uploaded successfully!';
+
+                // Optionally reset the form
+                event.target.reset();
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                alert("An error occurred while uploading the file.");
+            });
+        }
+
+        // Attach the handleFormSubmit function to the form on page load
+        window.onload = function() {
+            document.getElementById('upload-form').addEventListener('submit', handleFormSubmit);
+        };
+    </script>
+
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload File to Azure Blob Storage</h1>
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required><br>
+            <input type="submit" value="Upload File">
+        </form>
+
+        <!-- Success message section -->
+        <div id="success-message" class="success-message">
+            <!-- This will be updated with the success message -->
+        </div>
+
+        <div class="footer">
+            <p>Powered by Flask & Azure Blob Storage</p>
+        </div>
+    </div>
+</body>
+</html>

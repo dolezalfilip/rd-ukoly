@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aksapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aksapp
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: aksapp
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: my-workload-identity
+      containers:
+      - name: aksapp
+        image: aksukazkaregistry.azurecr.io/aksukazka:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: KEY_VAULT_NAME
+          value: "aksukazka" # Replace with your actual Key Vault name
+        - name: SECRET_NAME
+          value: "SuperSecret"   # Replace with your actual Secret name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aksapp-service
+spec:
+  type: LoadBalancer  # Creates an external LoadBalancer for public access
+  ports:
+    - port: 80
+      targetPort: 5000
+  selector:
+    app: aksapp
